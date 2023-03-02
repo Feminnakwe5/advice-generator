@@ -1,39 +1,77 @@
 import { useState, useEffect, useCallback } from 'react';
 
 function Jokes() {
-  const [joke, setJoke] = useState('');
+  const [jokes, setJokes] = useState('');
   const [url, setUrl] = useState('https://icanhazdadjoke.com/');
-  const [image, setImage] = useState();
-  const [isImage, setIsImage] = useState(false);
+  const [formData, setFormData] = useState('');
+  const [isRandom, setIsRandom] = useState(false);
 
   useEffect(() => {
     const headers = { Accept: 'application/json' };
     fetch(url, { headers })
       .then((res) => res.json())
       .then((json) => {
-        setJoke(json.joke);
+        setJokes([json.joke]);
       });
-  }, [url, isImage]);
+  }, [isRandom]);
 
-  // function getImage(imageUrl) {
-  //   setIsImage(true);
-  //   setUrl(imageUrl);
-  // }
-  function getJoke(url) {
-    url ? setUrl(url) : setIsImage((prevState) => !prevState);
+  function selectJoke(url) {
+    const headers = { Accept: 'application/json' };
+    fetch(url, { headers })
+      .then((res) => res.json())
+      .then((json) =>
+        setJokes(() => {
+          let categoryJokes = json.results;
+          const randomNumber = Math.floor(Math.random() * categoryJokes.length);
+          return categoryJokes[randomNumber].joke;
+        })
+      )
+      .catch((err) => setJokes(`${err}`));
   }
+
+  function getJoke(url) {
+    url && setUrl(url);
+    setIsRandom((prevState) => !prevState);
+  }
+
+  function handleChange(e) {
+    e.preventDefault();
+    setFormData(e.target.value);
+  }
+
   return (
     <div>
-      {joke && <p> {joke} </p>}
-      <button>get image</button>
-      <button onClick={() => getJoke()}> get random joke</button>
+      {jokes && <p> {jokes}</p>}
       <button
-        onClick={() =>
-          getJoke('https://icanhazdadjoke.com/search?term=hipster')
-        }
+        onClick={() => selectJoke('https://icanhazdadjoke.com/search?term=cat')}
       >
-        get hipster joke
+        get cat joke
       </button>
+      <button onClick={() => getJoke('https://icanhazdadjoke.com/')}>
+        get random joke
+      </button>
+      <button
+        onClick={() => selectJoke('https://icanhazdadjoke.com/search?term=dog')}
+      >
+        get dog joke
+      </button>
+      <div>
+        <input
+          type='text'
+          value={formData}
+          onChange={handleChange}
+          placeholder='Get custom joke'
+        />
+        {formData && (
+          <button
+            onClick={() =>
+              selectJoke(`https://icanhazdadjoke.com/search?term=${formData}`)
+            }
+          >
+            submit
+          </button>
+        )}
+      </div>
     </div>
   );
 }

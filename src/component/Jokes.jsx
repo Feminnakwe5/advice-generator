@@ -10,37 +10,38 @@ function Jokes() {
   }
 
   return (
-    <div>
-      {jokes && <p> {jokes}</p>}
-      <button
-        onClick={() => link('https://icanhazdadjoke.com/search?term=cat')}
-      >
-        get cat joke
-      </button>
-      <button onClick={() => link('https://icanhazdadjoke.com/')}>
-        get random joke
-      </button>
-      <button
-        onClick={() => link('https://icanhazdadjoke.com/search?term=dog')}
-      >
-        get dog joke
-      </button>
-      <div>
+    <div className='main'>
+      <div className='text'>
+        {jokes && <p> "{jokes}"</p>}
         <input
           type='text'
           value={formData}
           onChange={handleChange}
           placeholder='Get custom joke'
         />
-        {formData && (
-          <button
-            onClick={() =>
-              link(`https://icanhazdadjoke.com/search?term=${formData}`)
-            }
-          >
-            get Joke
-          </button>
-        )}
+      </div>
+      <div className='joke-category'>
+        <button onClick={() => link('https://icanhazdadjoke.com/')}>
+          random joke
+        </button>
+        <button
+          onClick={() => link('https://icanhazdadjoke.com/search?term=cat')}
+        >
+          cat joke
+        </button>
+        <button
+          onClick={() => link('https://icanhazdadjoke.com/search?term=dog')}
+        >
+          dog joke
+        </button>
+        <button
+          onClick={() =>
+            link(`https://icanhazdadjoke.com/search?term=${formData}`)
+          }
+          disabled={formData ? false : true}
+        >
+          custom Joke
+        </button>
       </div>
     </div>
   );

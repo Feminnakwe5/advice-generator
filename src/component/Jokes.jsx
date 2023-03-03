@@ -1,41 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-
+import { useState } from 'react';
+import { useFetch } from '../hooks/useFetch';
 function Jokes() {
-  const [jokes, setJokes] = useState('');
-  const [url, setUrl] = useState('https://icanhazdadjoke.com/');
   const [formData, setFormData] = useState('');
-  const [isRandom, setIsRandom] = useState(false);
-
-  useEffect(() => {
-    const headers = { Accept: 'application/json' };
-    fetch(url, { headers })
-      .then((res) => res.json())
-      .then((json) => {
-        setJokes([json.joke]);
-      });
-  }, [isRandom]);
-
-  function selectJoke(url) {
-    const headers = { Accept: 'application/json' };
-    fetch(url, { headers })
-      .then((res) => res.json())
-      .then((json) =>
-        setJokes(() => {
-          let categoryJokes = json.results;
-          const randomNumber = Math.floor(Math.random() * categoryJokes.length);
-          return categoryJokes[randomNumber].joke;
-        })
-      )
-      .catch((err) => setJokes(`${err}`));
-  }
-
-  function getJoke(url) {
-    url && setUrl(url);
-    setIsRandom((prevState) => !prevState);
-  }
+  const { jokes, link } = useFetch();
 
   function handleChange(e) {
-    e.preventDefault();
+    // e.preventDefault();
     setFormData(e.target.value);
   }
 
@@ -43,15 +13,15 @@ function Jokes() {
     <div>
       {jokes && <p> {jokes}</p>}
       <button
-        onClick={() => selectJoke('https://icanhazdadjoke.com/search?term=cat')}
+        onClick={() => link('https://icanhazdadjoke.com/search?term=cat')}
       >
         get cat joke
       </button>
-      <button onClick={() => getJoke('https://icanhazdadjoke.com/')}>
+      <button onClick={() => link('https://icanhazdadjoke.com/')}>
         get random joke
       </button>
       <button
-        onClick={() => selectJoke('https://icanhazdadjoke.com/search?term=dog')}
+        onClick={() => link('https://icanhazdadjoke.com/search?term=dog')}
       >
         get dog joke
       </button>
@@ -65,10 +35,10 @@ function Jokes() {
         {formData && (
           <button
             onClick={() =>
-              selectJoke(`https://icanhazdadjoke.com/search?term=${formData}`)
+              link(`https://icanhazdadjoke.com/search?term=${formData}`)
             }
           >
-            submit
+            get Joke
           </button>
         )}
       </div>
